@@ -1,0 +1,19 @@
+{
+  "name": "gitlab-standalone",
+  "version": "1.0.0",
+  "description": "ImageBox configuration for standalone gitlab.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Dmitry Zeldin <dmitry@zeldin.pro>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "nightmare": "^2.9.1",
+    "replace": "^0.3.0",
+    "replacestream": "^4.0.2",
+    "unirest": "^0.5.1"
+  }
+}
