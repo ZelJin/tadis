@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 
 
-export default class GitLabMaster extends Component {
+export default class CreateGitLabMaster extends Component {
   render() {
     return (
       <div className="container">
-        <h1>GitLabMaster</h1>
+        <h1>CreateGitLabMaster</h1>
       </div>
     );
   }
