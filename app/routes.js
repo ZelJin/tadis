@@ -11,7 +11,7 @@ import CreateGitLabSlave from './components/CreateGitLabSlave';
 
 
 export default (
-  <Route name="CIMagic" path="/" component={App}>
+  <Route name="Home" path="/" component={App}>
     <IndexRoute component={HomePage} />
     <Route name="GitLab CI" path="gitlab">
       <IndexRoute component={GitLabHome} />

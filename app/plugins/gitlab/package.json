@@ -10,10 +10,11 @@
   "author": "Dmitry Zeldin <dmitry@zeldin.pro>",
   "license": "ISC",
   "dependencies": {
+    "cheerio": "^0.22.0",
     "express": "^4.14.0",
-    "nightmare": "^2.9.1",
     "replace": "^0.3.0",
     "replacestream": "^4.0.2",
+    "request": "^2.79.0",
     "unirest": "^0.5.1"
   }
 }
