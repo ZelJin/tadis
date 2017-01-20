@@ -21,12 +21,16 @@ export default class MasterNode {
   }
 
   start() {
-    generateTemplate(this.options).then(() => {
-      return execTask(`docker-compose -f ${DOCKER_COMPOSE_FILE} up -d gitlab`);
-    }).then(() => {
-      this.status = 'STARTING';
-      this.startHelper();
-      this.checkStatus();
+    return new Promise((resolve, reject) => {
+      generateTemplate(this.options).then(() => {
+        return execTask(`docker-compose -f ${DOCKER_COMPOSE_FILE} up -d gitlab`);
+      }).then(() => {
+        this.status = 'STARTING';
+        this.startHelper();
+        return this.checkStatus();
+      }).then(() => {
+        resolve();
+      });
     });
   }
 
