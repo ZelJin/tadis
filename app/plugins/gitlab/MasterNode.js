@@ -25,7 +25,8 @@ export default class MasterNode {
       generateTemplate(this.options).then(() => {
         return execTask(`docker-compose -f ${DOCKER_COMPOSE_FILE} up -d gitlab`);
       }).then(() => {
-        this.status = 'STARTING';
+        //this.status = 'STARTING';
+        this.status = 'RUNNING';
         this.startHelper();
         return this.checkStatus();
       }).then(() => {
