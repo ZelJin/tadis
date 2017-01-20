@@ -32,7 +32,7 @@ export default class SlaveNode {
 
   start() {
     return generateTemplate(this.options).then(() => {
-      return execTask(`docker-compose up -f ${DOCKER_COMPOSE_FILE} -d gitlab-runner`);
+      return execTask(`docker-compose -f ${DOCKER_COMPOSE_FILE} up -d gitlab-runner`);
     }).then(() => {
       return this.getRegistrationToken()
     }).then((registrationToken) => {

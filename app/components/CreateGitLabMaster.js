@@ -14,8 +14,7 @@ export default class CreateGitLabMaster extends Component {
   }
 
   props: {
-    masterNode: Object,
-    history: Object
+    masterNode: Object
   }
 
   onIpChange(event) {
