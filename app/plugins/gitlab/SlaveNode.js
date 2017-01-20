@@ -1,24 +1,10 @@
-import { execSync } from 'child_process';
 import unirest from 'unirest';
-import fs from 'fs';
-import replaceStream from 'replacestream';
+import { generateTemplate, DOCKER_COMPOSE_FILE, execTask } from './index';
 
 export default class SlaveNode {
   constructor(options) {
     this.status = 'STOPPED';
     this.updateOptions(options);
-  }
-
-  prepareTemplate() {
-    return new new Promise(function(resolve, reject) {
-      const reader = fs.createReadStream('docker-cmpose-template.yml');
-      const writer = fs.createWriteStream('docker-compose.yml');
-      wr.on('close', resolve);
-      for (key in this.options) {
-        reader = reader.pipe(replaceStream('${' + key + '}', this.options[key]));
-      }
-      reader.pipe(writer);
-    });
   }
 
   updateOptions(options) {
@@ -41,14 +27,12 @@ export default class SlaveNode {
   }
 
   connectToMaster(registrationToken) {
-    return new Promise((resolve, reject) => {
-      execSync(`docker exec gitlab-runner gitlab-runner register --non-interactive --url http://${this.options.ip}:${this.options.gitlabPort} --registration-token ${registrationToken} --executor "docker" --name "docker-runner" --docker-image "ubuntu:latest"`)
-    });
+    return execTask(`docker exec gitlab-runner gitlab-runner register --non-interactive --url http://${this.options.ip}:${this.options.gitlabPort} --registration-token ${registrationToken} --executor "docker" --name "docker-runner" --docker-image "ubuntu:latest"`)
   }
 
   start() {
-    return this.prepareTemplate().then(() => {
-      execSync('docker-compose up -d gitlab-runner');
+    return generateTemplate(this.options).then(() => {
+      return execTask(`docker-compose up -f ${DOCKER_COMPOSE_FILE} -d gitlab-runner`);
     }).then(() => {
       return this.getRegistrationToken()
     }).then((registrationToken) => {

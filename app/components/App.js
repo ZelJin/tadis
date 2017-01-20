@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Breadcrumbs from 'react-breadcrumbs'
 import MasterNode from '../plugins/gitlab/MasterNode';
 import SlaveNode from '../plugins/gitlab/SlaveNode';
-import { GITLAB_DEFAULT_OPTIONS } from '../plugins/gitlab/DefaultOptions';
+import { GITLAB_DEFAULT_OPTIONS } from '../plugins/gitlab';
 
 export default class App extends Component {
   constructor(props) {

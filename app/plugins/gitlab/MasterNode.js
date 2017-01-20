@@ -1,29 +1,14 @@
-import { execSync } from 'child_process';
 import unirest from 'unirest';
-import fs from 'fs';
-import replaceStream from 'replacestream';
 import express from 'express';
 import request from 'request';
 import cheerio from 'cheerio';
+import { generateTemplate, DOCKER_COMPOSE_FILE, execTask } from './index';
 
 export default class MasterNode {
   constructor(options) {
     this.status = 'STOPPED';
     this.options = {}
     this.updateOptions(options);
-  }
-
-  prepareTemplate() {
-    return new Promise(function(resolve, reject) {
-      const reader = fs.createReadStream('./docker-compose-template.yml');
-      const writer = fs.createWriteStream('./docker-compose.yml');
-      writer.on('close', resolve);
-      console.log(this);
-      for (key in this.options) {
-        reader = reader.pipe(replaceStream('${' + key + '}', this.options[key]));
-      }
-      reader.pipe(writer);
-    });
   }
 
   updateOptions(options) {
@@ -36,10 +21,12 @@ export default class MasterNode {
   }
 
   start() {
-    this.prepareTemplate.bind(this).then(() => {
-      execSync('docker-compose up -d gitlab');
+    generateTemplate(this.options).then(() => {
+      return execTask(`docker-compose -f ${DOCKER_COMPOSE_FILE} up -d gitlab`);
+    }).then(() => {
       this.status = 'STARTING';
-      this.startHelper.bind(this);
+      this.startHelper();
+      this.checkStatus();
     });
   }
 
@@ -93,10 +80,10 @@ export default class MasterNode {
   }
 
   getRegistrationToken() {
-    return getLoginPage().then(result => {
-      return login(result.cookies, result.authenticityToken)
+    return this.getLoginPage().then(result => {
+      return this.login(result.cookies, result.authenticityToken)
     }).then(cookies => {
-      return queryRegistrationToken(cookies)
+      return this.queryRegistrationToken(cookies)
     });
   }
 
@@ -105,9 +92,8 @@ export default class MasterNode {
 
     app.get('/token', (req, res) => {
       if (this.status === 'RUNNING') {
-        this.getRegistrationToken().then(result => {
-          console.log(token);
-          return res.status(200).send(token);
+        this.getRegistrationToken().then(registrationToken => {
+          return res.status(200).send(registrationToken);
         });
       } else {
         return res.status(503).send('GitLab is not ready yet');
@@ -115,9 +101,7 @@ export default class MasterNode {
     });
 
     return app.listen(this.options.helperPort, this.options.ip, () => {
-      var host = server.address().address;
-      var port = server.address().port;
-      console.log("Application started at http://%s:%s", host, port);
+      console.log(`Application started at http://${this.options.ip}:${this.options.helperPort}`);
     });
   }
 
@@ -126,7 +110,6 @@ export default class MasterNode {
       unirest.get(`http://0.0.0.0:${this.options.gitlabPort}`)
       .timeout(5000)
       .end((response) => {
-        console.log(response.status);
         if (response.status === 200) {
           this.status = 'RUNNING';
         }
