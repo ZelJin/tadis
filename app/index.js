@@ -9,9 +9,7 @@ var jQuery = require('jquery');
 window.$ = window.jQuery = jQuery;
 var bootstrap = require('bootstrap');
 
-console.log(process.env.PATH);
 fixPath();
-console.log(process.env.PATH);
 
 render(
   <Router history={hashHistory} routes={routes} />,

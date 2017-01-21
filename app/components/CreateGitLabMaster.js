@@ -1,6 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { Link, hashHistory } from 'react-router';
+import Popup from './partials/Popup';
 
 
 export default class CreateGitLabMaster extends Component {
@@ -29,10 +30,30 @@ export default class CreateGitLabMaster extends Component {
     this.setState({rootPassword: event.target.value});
   }
 
-  createMasterNode() {
+  pollMasterNode() {
+    return new Promise((resolve, reject) => {
+      this.props.masterNode.checkStatus().then((status) => {
+        if (status === 'RUNNING') { resolve(); }
+        else {
+          setTimeout(() => {
+            this.pollMasterNode()
+          }, 5000)
+        }
+      });
+    });
+  }
+
+  createMasterNode(event) {
+    event.preventDefault();
     this.props.masterNode.updateOptions(this.state);
+    $('.modal.fade').modal('show');
     this.props.masterNode.start().then(() => {
-      hashHistory.push('/gitlab');
+      return this.pollMasterNode();
+    }).then(() => {
+      $('.modal.fade').modal('hide');
+      setTimeout(() => {
+        hashHistory.push('/gitlab');
+      }, 300)
     });
   }
 
@@ -75,6 +96,7 @@ export default class CreateGitLabMaster extends Component {
             </div>
           </div>
         </form>
+        <Popup stitle='Creating master node' message = 'Master node is being created. This may take a while.'/>
       </div>
     );
   }

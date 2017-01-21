@@ -23,7 +23,6 @@ export default class App extends Component {
   }
 
   render() {
-    console.log(this.state);
     return (
       <div>
         <Breadcrumbs routes={this.props.routes} params={this.props.params}
