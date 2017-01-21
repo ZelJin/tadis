@@ -24,13 +24,12 @@ export default class MasterNode {
     return new Promise((resolve, reject) => {
       generateTemplate(this.options).then(() => {
         return execTask(`docker-compose -f ${DOCKER_COMPOSE_FILE} up -d gitlab`);
-      }).then(() => {
-        //this.status = 'STARTING';
-        this.status = 'RUNNING';
+      }).then((stdout) => {
+        this.status = 'STARTING';
         this.startHelper();
-        return this.checkStatus();
-      }).then(() => {
-        resolve();
+        resolve(stdout);
+      }).catch((err) => {
+        reject(err);
       });
     });
   }

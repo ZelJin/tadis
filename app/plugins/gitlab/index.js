@@ -15,12 +15,10 @@ export const DOCKER_COMPOSE_FILE = process.resourcesPath + '/docker-compose.yml'
 export function execTask(task) {
   return new Promise((resolve, reject) => {
     exec(task, function(error, stdout, stderr) {
-      console.log('stdout: ' + stdout);
-      console.log('stderr: ' + stderr);
       if (error !== null) {
-          reject('exec error: ' + error);
+        reject(error);
       } else {
-        resolve();
+        resolve(stdout);
       }
     });
   });

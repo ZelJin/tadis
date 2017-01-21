@@ -1,24 +1,21 @@
 // @flow
 import React, { Component } from 'react';
 import { Link, hashHistory } from 'react-router';
+import Popup from './partials/Popup';
 
 
 export default class CreateGitLabSlave extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ip: this.props.slaveNode.options.ip,
       gitlabPort: this.props.slaveNode.options.gitlabPort,
       masterIp: this.props.slaveNode.options.masterIp
     }
   }
 
   props: {
-    slaveNode: Object
-  }
-
-  onIpChange(event) {
-    this.setState({ip: event.target.value})
+    slaveNode: Object,
+    flash: Object
   }
 
   onGitlabPortChange(event) {
@@ -29,10 +26,22 @@ export default class CreateGitLabSlave extends Component {
     this.setState({masterIp: event.target.value});
   }
 
-  createSlaveNode() {
+  createSlaveNode(event) {
+    event.preventDefault();
     this.props.slaveNode.updateOptions(this.state);
+    $('.modal.fade').modal('show');
     this.props.slaveNode.start().then(() => {
-      hashHistory.push('/gitlab');
+      $('.modal.fade').modal('hide');
+      this.props.flash.show('success', 'Successfully created slave node.');
+      setTimeout(() => {
+        hashHistory.push('/gitlab');
+      }, 300);
+    }).catch((err) => {
+      $('.modal.fade').modal('hide')
+      setTimeout(() => {
+        this.props.flash.show('danger', err);
+        hashHistory.push('/gitlab');
+      }, 300);
     });
   }
 
@@ -60,21 +69,13 @@ export default class CreateGitLabSlave extends Component {
             </div>
           </div>
           <div className="form-group">
-            <label htmlFor="ip" className="col-xs-3 control-label">
-              IP address
-            </label>
-            <div className="col-xs-9">
-              <input id="ip" type="text" className="form-control"
-                value={this.state.ip} onChange={this.onIpChange.bind(this)}/>
-            </div>
-          </div>
-          <div className="form-group">
             <div className="col-xs-9 col-xs-offset-3">
               <button type="submit" className="btn btn-default"
                  onClick={this.createSlaveNode.bind(this)} >Create node</button>
             </div>
           </div>
         </form>
+        <Popup stitle='Creating slave node' message = 'Slave node is being created. This may take a while.'/>
       </div>
     );
   }

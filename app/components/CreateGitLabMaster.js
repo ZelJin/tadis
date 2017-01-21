@@ -15,7 +15,8 @@ export default class CreateGitLabMaster extends Component {
   }
 
   props: {
-    masterNode: Object
+    masterNode: Object,
+    flash: Object
   }
 
   onIpChange(event) {
@@ -52,8 +53,16 @@ export default class CreateGitLabMaster extends Component {
     }).then(() => {
       $('.modal.fade').modal('hide');
       setTimeout(() => {
+        this.props.flash.show('success', 'Successfully started master node', 1000);
         hashHistory.push('/gitlab');
-      }, 300)
+      }, 300);
+    }).catch((err) => {
+      $('.modal.fade').modal('hide')
+      setTimeout(() => {
+        this.props.flash.show('danger', err);
+        hashHistory.push('/gitlab');
+      }, 300);
+
     });
   }
 

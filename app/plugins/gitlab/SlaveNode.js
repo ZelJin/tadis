@@ -11,14 +11,13 @@ export default class SlaveNode {
     this.options = {
       gitlabPort: options.gitlabPort || 80,
       helperPort: options.helperPort || 30000,
-      ip: options.ip || '0.0.0.0',
       masterIp: options.masterIp || '0.0.0.0'
     }
   }
 
   getRegistrationToken() {
     return new Promise((resolve, reject) => {
-      unirest.get(`http://${this.options.ip}:${this.options.helperPort}/token`)
+      unirest.get(`http://${this.options.masterIp}:${this.options.helperPort}/token`)
       .end((response) => {
         console.log(response.body);
         resolve(response.body);
@@ -27,7 +26,7 @@ export default class SlaveNode {
   }
 
   connectToMaster(registrationToken) {
-    return execTask(`docker exec gitlab-runner gitlab-runner register --non-interactive --url http://${this.options.ip}:${this.options.gitlabPort} --registration-token ${registrationToken} --executor "docker" --name "docker-runner" --docker-image "ubuntu:latest"`)
+    return execTask(`docker exec gitlab-runner gitlab-runner register --non-interactive --url http://${this.options.masterIp}:${this.options.gitlabPort} --registration-token ${registrationToken} --executor "docker" --name "docker-runner" --docker-image "ubuntu:latest"`)
   }
 
   start() {
