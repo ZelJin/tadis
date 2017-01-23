@@ -57,15 +57,15 @@ export function startHelper(options) {
   }
 
   function getRegistrationToken() {
-    return this.getLoginPage().then(result => {
-      return this.login(result.cookies, result.authenticityToken)
+    return getLoginPage().then(result => {
+      return login(result.cookies, result.authenticityToken)
     }).then(cookies => {
-      return this.queryRegistrationToken(cookies)
+      return queryRegistrationToken(cookies)
     });
   }
 
   app.get('/token', (req, res) => {
-    this.getRegistrationToken().then(registrationToken => {
+    getRegistrationToken().then(registrationToken => {
       return res.status(200).send(registrationToken);
     });
   });

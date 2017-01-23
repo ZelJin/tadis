@@ -32,7 +32,12 @@ export class MasterNodeStore extends Reflux.Store {
       if (data && data.hasOwnProperty('gitlab-master-options') && data.hasOwnProperty('gitlab-master-status')) {
         this.setState({
           status: data['gitlab-master-status'],
-          options: data['gitlab-master-options']
+          options: {
+            gitlabPort:   data['gitlab-master-options'].gitlabPort || DEFAULT_OPTIONS.gitlabPort,
+            helperPort:   data['gitlab-master-options'].helperPort || DEFAULT_OPTIONS.helperPort,
+            rootPassword:   data['gitlab-master-options'].rootPassword || DEFAULT_OPTIONS.rootPassword,
+            ip:   data['gitlab-master-options'].ip || DEFAULT_OPTIONS.ip
+          }
         });
         if (data['gitlab-master-status'] === 'RUNNING') {
           startHelper(data['gitlab-master-options']);
@@ -92,8 +97,14 @@ export class MasterNodeStore extends Reflux.Store {
       NotificationActions.add('success', 'Successfully destroyed master node.');
       this.setStatus('NOT STARTED');
     }).catch((err) => {
-      this.setStatus(prevStatus);
-      NotificationActions.add('danger', err);
+      if (err.toString().includes('Found orphan containers (gitlab-runner) for this project.')) {
+        // False positive
+        this.setStatus('NOT STARTED');
+        NotificationActions.add('success', 'Successfully destroyed master node.');
+      } else {
+        this.setStatus(prevStatus);
+        NotificationActions.add('danger', err);
+      }
     });
   }
 

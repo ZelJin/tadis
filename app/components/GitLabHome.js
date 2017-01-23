@@ -2,6 +2,7 @@ import React from 'react';
 import Reflux from 'reflux';
 import { Link } from 'react-router';
 import GitLabMasterForm from './GitLabMasterForm';
+import GitLabSlaveForm from './GitLabSlaveForm';
 import { MasterNodeStore, MasterNodeActions } from '../stores/MasterNode';
 import { SlaveNodeStore, SlaveNodeActions } from '../stores/SlaveNode';
 
@@ -35,7 +36,6 @@ export default class GitLabHome extends Reflux.Component {
 
   render() {
     var masterActions = (<div></div>)
-    console.log(this.state.masterNode.status);
     if (this.state.masterNode.status === 'STOPPED') {
       masterActions = (
         <div className="row">
@@ -49,7 +49,7 @@ export default class GitLabHome extends Reflux.Component {
           </div>
         </div>
       )
-    } else if (this.state.masterNode.status === 'RUNNING' || this.state.masterNode.status === 'PENDING') {
+    } else if (this.state.masterNode.status === 'RUNNING') {
       masterActions = (<div className="row">
         <div className="col-xs-7 col-xs-offset-5">
           <button className="btn btn-default" onClick={MasterNodeActions.stop}>
@@ -58,6 +58,17 @@ export default class GitLabHome extends Reflux.Component {
           <a href={`http://${this.state.masterNode.options.ip}:${this.state.masterNode.options.gitlabPort}`} target="_blank" className="btn btn-default">
             Visit GitLab
           </a>
+        </div>
+      </div>)
+    }
+
+    var slaveActions = (<div></div>)
+    if (this.state.slaveNode.status === 'RUNNING' || this.state.slaveNode.status === 'PENDING') {
+      slaveActions = (<div className="row">
+        <div className="col-xs-7 col-xs-offset-5">
+          <button className="btn btn-default" onClick={SlaveNodeActions.destroy}>
+            Disconnect from master node
+          </button>
         </div>
       </div>)
     }
@@ -74,6 +85,9 @@ export default class GitLabHome extends Reflux.Component {
           </div>
           <div className="col-sm-6">
             <h2>Slave node</h2>
+            <h4>Status: {this.state.slaveNode.status}</h4>
+            <GitLabSlaveForm slaveNode={this.state.slaveNode} />
+            {slaveActions}
           </div>
         </div>
       </div>

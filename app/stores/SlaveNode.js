@@ -30,13 +30,17 @@ export class SlaveNodeStore extends Reflux.Store {
         data.hasOwnProperty('gitlab-slave-status')) {
         this.setState({
           status: data['gitlab-slave-status'],
-          options: data['gitlab-slave-options']
+          options: {
+            gitlabPort: data['gitlab-master-options'].gitlabPort || DEFAULT_OPTIONS.gitlabPort,
+            helperPort: data['gitlab-master-options'].helperPort || DEFAULT_OPTIONS.helperPort,
+            masterIp: data['gitlab-master-options'].masterIp || DEFAULT_OPTIONS.masterIp
+          }
         });
       }
     });
   }
 
-  onCreate() {
+  onCreate(newOptions) {
     const prevStatus = this.state.status;
     this.setStatus('PENDING');
     this.setOptions(newOptions);
@@ -67,8 +71,14 @@ export class SlaveNodeStore extends Reflux.Store {
       console.log(stdout);
       NotificationActions.add('success', 'Successfully destroyed slave node.');
     }).catch((err) => {
-      this.setStatus(prevStatus);
-      NotificationActions.add('danger', err);
+      if (err.toString().includes('Found orphan containers (gitlab) for this project.')) {
+        // False positive
+        this.setStatus('NOT STARTED');
+        NotificationActions.add('success', 'Successfully destroyed slave node.');
+      } else {
+        this.setStatus(prevStatus);
+        NotificationActions.add('danger', err);
+      }
     });
   }
 
