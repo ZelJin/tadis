@@ -2,14 +2,24 @@ import React, { Component } from 'react';
 
 export default class Popup extends Component {
   props: {
-    id: String,
     title: String,
     message: String,
+    status: String,
+    selector: String
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.status === 'PENDING' && this.props.status !== 'PENDING') {
+      $('#' + newProps.selector).modal('show');
+    }
+    if (newProps.status !== 'PENDING' && this.props.status === 'PENDING') {
+      $('#' + newProps.selector).modal('hide');
+    }
   }
 
   render() {
     return (
-      <div className="modal fade" tabIndex="-1" role="dialog">
+      <div id={this.props.selector} className="modal fade" tabIndex="-1" role="dialog">
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">

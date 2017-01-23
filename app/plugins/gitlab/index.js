@@ -48,9 +48,9 @@ export function generateTemplate(options) {
             options.gitlabPort.toString()
           ],
           'volumes': [
-            '/etc/gitlab',
-            '/var/log/gitlab',
-            '/var/opt/gitlab'
+            'gitlab-etc:/etc/gitlab',
+            'gitlab-log:/var/log/gitlab',
+            'gitlab-opt:/var/opt/gitlab'
           ]
         },
         'gitlab-runner': {
@@ -58,8 +58,7 @@ export function generateTemplate(options) {
           'container_name': 'gitlab-runner',
           'restart': 'always',
           'volumes': [
-            '/var/run/docker.sock:/var/run/docker.sock',
-            '/etc/gitlab-runner'
+            '/var/run/docker.sock:/var/run/docker.sock'
           ]
         }
       }

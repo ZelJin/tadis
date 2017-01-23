@@ -1,18 +1,25 @@
 import unirest from 'unirest';
 import { generateTemplate, DOCKER_COMPOSE_FILE, execTask } from './index';
+import storage from 'electron-json-storage';
 
 export default class SlaveNode {
-  constructor(options) {
-    this.status = 'STOPPED';
-    this.updateOptions(options);
+  constructor(status, options) {
+    this.status = status;
+    this.setOptions(options);
   }
 
-  updateOptions(options) {
+  setOptions(options) {
     this.options = {
       gitlabPort: options.gitlabPort || 80,
       helperPort: options.helperPort || 30000,
       masterIp: options.masterIp || '0.0.0.0'
     }
+    storage.set('gitlab-slave-options', this.options);
+  }
+
+  setStatus(status) {
+    this.status = status;
+    status.set('gitlab-slave-status', this.status);
   }
 
   getRegistrationToken() {

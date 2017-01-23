@@ -3,21 +3,32 @@ import express from 'express';
 import request from 'request';
 import cheerio from 'cheerio';
 import { generateTemplate, DOCKER_COMPOSE_FILE, execTask } from './index';
+import storage from 'electron-json-storage';
 
 export default class MasterNode {
-  constructor(options) {
-    this.status = 'STOPPED';
+  constructor(status, options) {
+    this.status = status;
     this.options = {}
-    this.updateOptions(options);
+    this.setOptions(options);
+    if (this.status === 'RUNNING') {
+      this.startHelper();
+    }
   }
 
-  updateOptions(options) {
+  setOptions(options) {
+    console.log(options);
     this.options = {
       gitlabPort: options.gitlabPort || 80,
       helperPort: options.helperPort || 30000,
       ip: options.ip || '0.0.0.0',
       rootPassword: options.rootPassword || '5iveL!fe'
     }
+    storage.set('gitlab-master-options', this.options);
+  }
+
+  setStatus(status) {
+    this.status = status;
+    storage.set('gitlab-master-status', this.status);
   }
 
   start() {
@@ -25,11 +36,37 @@ export default class MasterNode {
       generateTemplate(this.options).then(() => {
         return execTask(`docker-compose -f ${DOCKER_COMPOSE_FILE} up -d gitlab`);
       }).then((stdout) => {
-        this.status = 'STARTING';
+        this.setStatus('STARTING');
         this.startHelper();
         resolve(stdout);
       }).catch((err) => {
         reject(err);
+      });
+    });
+  }
+
+  stop() {
+    return new Promise((resolve, reject) => {
+      generateTemplate(this.options).then(() => {
+        return execTask(`docker-compose -f ${DOCKER_COMPOSE_FILE} stop gitlab`);
+      }).then((stdout) => {
+        this.setStatus('STOPPED');
+        resolve(stdout);
+      }).catch((err) => {
+        reject(err)
+      });
+    });
+  }
+
+  destroy() {
+    return new Promise((resolve, reject) => {
+      generateTemplate(this.options).then(() => {
+        return execTask(`docker-compose -f ${DOCKER_COMPOSE_FILE} down -v gitlab`);
+      }).then((stdout) => {
+        this.setStatus('NOT STARTED');
+        resolve(stdout);
+      }).catch((err) => {
+        reject(err)
       });
     });
   }
@@ -115,7 +152,7 @@ export default class MasterNode {
       .timeout(5000)
       .end((response) => {
         if (response.status === 200) {
-          this.status = 'RUNNING';
+          this.setStatus('RUNNING');
         }
         resolve(this.status);
       });
