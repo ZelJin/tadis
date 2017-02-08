@@ -31,6 +31,7 @@ export function generateTemplate(filename, options, image) {
         'services': {
           'gitlab': {
             'image': 'gitlab/gitlab-ce:latest',
+            'mem_limit': '6144m',
             'container_name': 'gitlab',
             'restart': 'always',
             'environment': {
@@ -52,7 +53,7 @@ export function generateTemplate(filename, options, image) {
               '/etc/gitlab',
               '/var/log/gitlab',
               '/var/opt/gitlab'
-            ]
+            ],
           }
         }
       }
