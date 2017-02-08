@@ -37,12 +37,13 @@ export function generateTemplate(filename, options, image) {
               'GITLAB_OMNIBUS_CONFIG': [
                 `external_url "http://${options.ip}:${options.gitlabPort}"`,
                 `gitlab_rails['initial_root_password'] = "${options.rootPassword}"`,
+                `gitlab_rails['gitlab_shell_ssh_port'] = 10022`,
                 //TODO: Add email-related options here
               ].join('\n'),
             },
             'ports': [
               `${options.gitlabPort}:80`,
-              '22:22'
+              '10022:10022'
             ],
             'expose': [
               options.gitlabPort.toString()
