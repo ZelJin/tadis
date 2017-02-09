@@ -61,6 +61,11 @@ app.on('ready', async () => {
     mainWindow = null;
   });
 
+  mainWindow.webContents.on('new-window', function(e, url) {
+    e.preventDefault();
+    shell.openExternal(url);
+  });
+
   if (process.env.NODE_ENV === 'development') {
     mainWindow.openDevTools();
     mainWindow.webContents.on('context-menu', (e, props) => {
