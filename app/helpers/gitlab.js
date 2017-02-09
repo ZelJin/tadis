@@ -39,6 +39,7 @@ export function generateTemplate(filename, options, image) {
                 `external_url "http://${options.ip}:${options.gitlabPort}"`,
                 `gitlab_rails['initial_root_password'] = "${options.rootPassword}"`,
                 `gitlab_rails['gitlab_shell_ssh_port'] = 10022`,
+                `gitlab_rails['rack_attack_git_basic_auth'] = { 'enabled' => false, }`,
                 //TODO: Add email-related options here
               ].join('\n'),
             },

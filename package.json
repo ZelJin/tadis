@@ -1,7 +1,7 @@
 {
-  "name": "electron-react-boilerplate",
+  "name": "CIMagic",
   "productName": "CIMagic",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "Electron application for managing CI infrastructure",
   "main": "main.js",
   "scripts": {
@@ -166,6 +166,7 @@
     "react-breadcrumbs": "^1.5.2",
     "react-dom": "^15.4.2",
     "react-router": "^3.0.0",
+    "reflux": "^6.1.0",
     "request": "^2.79.0",
     "source-map-support": "^0.4.8",
     "unirest": "^0.5.1"
