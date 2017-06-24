@@ -79,7 +79,7 @@
     "name": "Dmitry Zeldin",
     "email": "dmitry.zeldin@tum.de"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "electron",
     "react",
